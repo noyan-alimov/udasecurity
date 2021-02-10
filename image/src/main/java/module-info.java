@@ -1,4 +1,4 @@
-module image {
+module com.udacity.image {
     exports com.udacity.image.service;
     requires org.slf4j;
     requires software.amazon.awssdk.services.rekognition;
