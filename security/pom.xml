@@ -15,6 +15,13 @@
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
+  <properties>
+    <!-- plugins -->
+    <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
+    <!-- dependencies -->
+    <dep.version>1.0-SNAPSHOT</dep.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -56,12 +63,18 @@
           </configuration>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>3.3.0</version>
           <configuration>
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
+            <archive>
+              <manifest>
+                <mainClass>com.udacity.security.application.CatpointApp</mainClass>
+              </manifest>
+            </archive>
           </configuration>
           <executions>
             <execution>
