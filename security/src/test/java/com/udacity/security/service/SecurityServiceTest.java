@@ -65,7 +65,7 @@ public class SecurityServiceTest<ImageService> {
         return sensors;
     }
 
-    @ParameterizedTest //covers 1
+    @ParameterizedTest
     @EnumSource(value = ArmingStatus.class, names = {"ARMED_HOME", "ARMED_AWAY"})
     void changeAlarmStatus_alarmArmedAndSensorActivated_alarmStatusPending(ArmingStatus armingStatus){
         when(securityRepository.getSensors()).thenReturn(getSensors(true, 2));
@@ -84,7 +84,7 @@ public class SecurityServiceTest<ImageService> {
         verify(securityRepository, atMost(2)).setAlarmStatus(AlarmStatus.ALARM); //first call up
     }
 
-    @Test //tests 3
+    @Test
     void changeAlarmStatus_alarmPendingAndAllSensorsInactive_changeToNoAlarm(){
         Set<Sensor> allSensors = getSensors(false, 4);
         when(securityRepository.getSensors()).thenReturn(allSensors);
@@ -94,7 +94,7 @@ public class SecurityServiceTest<ImageService> {
         assertEquals(captor.getValue(), AlarmStatus.NO_ALARM);
     }
 
-    @Test  //tests 4
+    @Test
     void changeAlarmState_alarmActiveAndSensorStateChanges_stateNotAffected() {
         sensor.setActive(false);
         when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
@@ -104,7 +104,6 @@ public class SecurityServiceTest<ImageService> {
         verify(securityRepository, atMostOnce()).updateSensor(captor.capture());
         assertEquals(captor.getValue(), sensor);
 
-        //when sensor state changes
         sensor.setActive(true);
         securityService.changeSensorActivationStatus(sensor, false);
         verify(securityRepository, never()).setAlarmStatus(any(AlarmStatus.class));
@@ -122,7 +121,7 @@ public class SecurityServiceTest<ImageService> {
         verify(securityRepository, atMostOnce()).updateSensor(sensor);
     }
 
-    @Test //tests 5
+    @Test
     void changeAlarmState_systemActivatedWhileAlreadyActiveAndAlarmPending_changeToAlarmState(){
         when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
         securityService.changeSensorActivationStatus(sensor, true);
@@ -131,14 +130,14 @@ public class SecurityServiceTest<ImageService> {
         assertEquals(captor.getValue(), AlarmStatus.ALARM); //fix code
     }
 
-    @ParameterizedTest //tests 6
+    @ParameterizedTest
     @EnumSource(value = AlarmStatus.class, names = {"NO_ALARM", "PENDING_ALARM", "ALARM"})
     void changeAlarmState_sensorDeactivateWhileInactive_noChangeToAlarmState(AlarmStatus alarmStatus){
         securityService.changeSensorActivationStatus(sensor, false);
         verify(securityRepository, never()).setAlarmStatus(any());
     }
 
-    @Test //tests 7
+    @Test
     void changeAlarmState_imageContainingCatDetectedAndSystemArmed_changeToAlarmStatus(){
         when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
         when(imageService.imageContainsCat(any(), anyFloat())).thenReturn(true);
@@ -148,7 +147,7 @@ public class SecurityServiceTest<ImageService> {
         assertEquals(captor.getValue(), AlarmStatus.ALARM);
     }
 
-    @Test //tests 8
+    @Test
     void changeAlarmState_noCatImageIdentifiedAndSensorsAreInactive_changeToAlarmStatus(){
         Set<Sensor> inactiveSensors = getSensors(false, 4);
         when(securityRepository.getSensors()).thenReturn(inactiveSensors);
@@ -159,7 +158,7 @@ public class SecurityServiceTest<ImageService> {
         assertEquals(captor.getValue(), AlarmStatus.NO_ALARM);
     }
 
-    @Test //tests 9
+    @Test
     void changeAlarmStatus_systemDisArmed_changeToAlarmStatus(){
         securityService.setArmingStatus(ArmingStatus.DISARMED);
         ArgumentCaptor<AlarmStatus> captor = ArgumentCaptor.forClass(AlarmStatus.class);
@@ -168,7 +167,7 @@ public class SecurityServiceTest<ImageService> {
     }
 
     //If the system is armed, reset all sensors to inactive.
-    @ParameterizedTest //tests 10
+    @ParameterizedTest
     @EnumSource(value = ArmingStatus.class, names = {"ARMED_AWAY", "ARMED_HOME"})
     void updateSensors_systemArmed_deactivateAllSensors(ArmingStatus armingStatus){
         Set<Sensor> sensors = getSensors(true, 4);
